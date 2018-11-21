@@ -12,6 +12,8 @@
     "test": "./bin/cli.js test"
   },
   "files": [
+    "./github/logo.png",
+    "./github/divider.png",
     "bin/",
     "lib"
   ],
