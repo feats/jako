@@ -71,25 +71,23 @@ for the full list of available `options`, please check [jake's options](https://
 
 Let's create our first script together! To do so, let's imagine you want to have a script that clears all the `node_modules` folders in your repo.
 
-1. create a `/scripts/clean` folder inside your project:
+1. create a `/scripts/clean` folder and create a file named `node_modules.sh` inside it:
 ```bash
 $ mkdir -p scripts/clean
-```
-2. write the logic inside an executable file inside the created folder:
-```bash
 $ printf "#\!/bin/bash\nfind . \( -type d -name 'node_modules' \) -exec rm -rf '{}' +" > scripts/clean/node_modules.sh
 ```
-3. give it permission to run:
+2. give it permission to run:
 ```bash
 $ chmod +x **/*.sh
 ```
 
-4. run it!
+3. run it!
 ```bash
 # both calls below should be equivalent:
+
 $ jako clean:node_modules
 # or
-$ ./scripts/clean/node_modules.sh
+$ cd ./scripts/clean ; ./node_modules.sh
 
 # running `jako` with no arguments will list the available tasks
 $ jako
@@ -104,7 +102,8 @@ Nesting `scripts` folders deep inside your project is not only possible but reco
 ## Good practices
 
 * always add [shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29) to your scripts.
-* always give your scripts permision to run: `chmod +x **/*.ext` (where `ext` is the extension of the files you want to make executable)
+* always give your scripts permission to run: `chmod +x file-path.ext`
+* _jako_ will always call your scripts **from the directory they are placed in**, but not all runners will do that for you. If you, i.e, execute a bash script as `./scripts/clean/node_modules.sh` instead of `cd ./scripts/clean ; ./node_modules.sh`, that could remove folders in different places than the ones you expected. That's why we encourage you to enforce a standardized `cwd` for all your scripts. In bash you can do that by appending `dirname "$0"` to the top of your scripts.
 
 ![divider](.github/divider.png)
 
