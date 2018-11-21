@@ -11,6 +11,10 @@
   "scripts": {
     "test": "./bin/cli.js test"
   },
+  "files": [
+    "bin/",
+    "lib"
+  ],
   "dependencies": {
     "glob": "^7.1.0",
     "intercept-stdout": "^0.1.2",
