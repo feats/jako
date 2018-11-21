@@ -16,8 +16,9 @@
  *
  */
 
+const fs = require('fs')
 const path = require('path')
-const glob = require('glob/glob.js')
+const glob = require('glob')
 const intercept = require('intercept-stdout')
 const { execFileSync } = require('child_process')
 
@@ -35,7 +36,7 @@ function wrapInNamespaces(namespaces) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Apps & Packages                                                           //
+// Jakefiles                                                                 //
 ///////////////////////////////////////////////////////////////////////////////
 
 const fileName = 'Jakefile'
@@ -47,7 +48,7 @@ const types = {
 const typesInverted = Object.keys(types).reduce((obj, key) => ((obj[types[key]] = key), obj), {})
 
 for (const type of Object.keys(types)) {
-  const recipes = glob.sync(`./${types[type]}/*/${fileName}`)
+  const recipes = glob.sync(`./${types[type]}/*/${fileName}`, { nodir: true })
 
   namespace(type, () => {
     for (const recipe of recipes) {
@@ -75,6 +76,12 @@ function addTask(name, script) {
 
 function processScripts(paths) {
   for (const script of paths) {
+    try {
+      fs.accessSync(script, fs.constants.X_OK)
+    } catch (err) {
+      continue
+    }
+
     const parts = path.dirname(script).split('/')
     let name = path.basename(script, path.extname(script))
 
@@ -90,9 +97,11 @@ function processScripts(paths) {
   }
 }
 
-processScripts(glob.sync(`@(${Object.values(types).join('|')})/*/scripts/**/*.+(sh|js)`, { cwd }))
-processScripts(glob.sync(`scripts/**/*.+(sh|js)`, { cwd }))
-processScripts(glob.sync(`k8s/**/*.+(sh|js)`, { cwd }))
+processScripts(
+  glob.sync(`@(${Object.values(types).join('|')})/*/scripts/**/*`, { cwd, nodir: true })
+)
+processScripts(glob.sync(`scripts/**/*`, { cwd, nodir: true }))
+processScripts(glob.sync(`k8s/**/*`, { cwd, nodir: true }))
 
 ///////////////////////////////////////////////////////////////////////////////
 // Wildcards                                                                 //
