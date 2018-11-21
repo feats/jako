@@ -1,0 +1,22 @@
+{
+  "name": "jako",
+  "version": "1.0.0",
+  "author": "Victor Duarte <victor.duarte@quadric.net> (https://credcollective.com)",
+  "private": false,
+  "license": "Apache-2.0",
+  "preferGlobal": true,
+  "bin": {
+    "jako": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "./bin/cli.js test"
+  },
+  "dependencies": {
+    "glob": "^7.1.0",
+    "intercept-stdout": "^0.1.2",
+    "jake": "^8.0.0"
+  },
+  "optionalDependencies": {
+    "ora": "^3.0.0"
+  }
+}

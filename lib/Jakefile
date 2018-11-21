@@ -1,0 +1,166 @@
+const path = require('path')
+const glob = require('glob/glob.js')
+const intercept = require('intercept-stdout')
+const { execFileSync } = require('child_process')
+
+const cwd = process.cwd()
+intercept(txt => txt.replace('jake ', 'jako '))
+
+function wrapInNamespaces(namespaces) {
+  const current = (previous, ns) => next => {
+    const nsCode = typesInverted[ns] || ns
+
+    previous(() => namespace(nsCode, next))
+  }
+
+  return namespaces.filter(dir => !['.', 'scripts'].includes(dir)).reduce(current, x => x())
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Apps & Packages                                                           //
+///////////////////////////////////////////////////////////////////////////////
+
+const fileName = 'Jakefile'
+const types = {
+  app: 'applications',
+  pkg: 'packages',
+  svc: 'services',
+}
+const typesInverted = Object.keys(types).reduce((obj, key) => ((obj[types[key]] = key), obj), {})
+
+for (const type of Object.keys(types)) {
+  const recipes = glob.sync(`./${types[type]}/*/${fileName}`)
+
+  namespace(type, () => {
+    for (const recipe of recipes) {
+      const name = recipe.replace(`./${types[type]}/`, '').replace(`/${fileName}`, '')
+
+      namespace(name, () => {
+        require(recipe)
+      })
+    }
+  })
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Scripts                                                                   //
+///////////////////////////////////////////////////////////////////////////////
+
+function addTask(name, script) {
+  desc(' ')
+  task(name, (...args) => {
+    const absolute = path.resolve(cwd, script)
+
+    execFileSync(absolute, args || [], { cwd: path.dirname(absolute), stdio: 'inherit' })
+  })
+}
+
+function processScripts(paths) {
+  for (const script of paths) {
+    const parts = path.dirname(script).split('/')
+    let name = path.basename(script, path.extname(script))
+
+    if (name === 'default') {
+      name = parts.pop()
+    }
+
+    const theTask = () => {
+      addTask(name, script)
+    }
+
+    wrapInNamespaces(parts)(theTask)
+  }
+}
+
+processScripts(glob.sync(`@(${Object.values(types).join('|')})/*/scripts/**/*.+(sh|js)`, { cwd }))
+processScripts(glob.sync(`scripts/**/*.+(sh|js)`, { cwd }))
+processScripts(glob.sync(`k8s/**/*.+(sh|js)`, { cwd }))
+
+///////////////////////////////////////////////////////////////////////////////
+// Wildcards                                                                 //
+///////////////////////////////////////////////////////////////////////////////
+const temporaryMessage = text => {
+  try {
+    const ora = require('ora')
+
+    const spinner = ora({ text, spinner: 'toggle7', color: 'yellow' })
+    spinner.start()
+
+    return spinner
+  } catch (e) {
+    console.log(text)
+  }
+}
+
+const runAsync = action =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      try {
+        resolve(action())
+      } catch (e) {
+        reject(e)
+      }
+    })
+  })
+
+function setWildcards(type) {
+  const store = {}
+
+  for (const taskDescriptor of Object.values(jake.Task)) {
+    if (!(taskDescriptor.fullName && taskDescriptor.fullName.startsWith(`${type}:`))) {
+      continue
+    }
+
+    const parts = taskDescriptor.fullName.split(':')
+    parts.shift() // removes `type` namespace
+    parts.shift() // removes the top namespace (will be replaced by `*`)
+
+    const path = parts.join(':')
+    store[path] = store[path] || []
+    store[path].push(taskDescriptor.action)
+  }
+
+  for (const path of Object.keys(store)) {
+    namespace(type, () => {
+      namespace('*', () => {
+        const parts = path.split(':')
+        const name = parts.pop()
+
+        wrapInNamespaces(parts)(() => {
+          const list = store[path]
+          desc(`${list.length} task${list.length > 1 ? 's' : ''}`)
+          task(name, () => {
+            const stopMessage = temporaryMessage(
+              `Running ${list.length} tasks from \`${type}:*:${path}\``
+            )
+
+            const actions = list.map(runAsync)
+            Promise.all(actions)
+              .then(() => stopMessage && stopMessage.succeed())
+              .catch(e => {
+                stopMessage && stopMessage.fail()
+                setTimeout(() => {
+                  throw e
+                })
+              })
+          })
+        })
+      })
+    })
+  }
+}
+
+for (const type of Object.keys(types)) {
+  setWildcards(type)
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Others                                                                    //
+///////////////////////////////////////////////////////////////////////////////
+
+task('default', () => {
+  console.log('Welcome to your amazing project! 😍')
+  console.log('Please choose and run one of the registered tasks:\n')
+
+  jake.showAllTaskDescriptions()
+})
