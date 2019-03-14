@@ -1,7 +1,7 @@
 {
   "name": "jako",
-  "version": "1.0.1",
-  "author": "Victor Duarte <victor.duarte@quadric.net> (https://credcollective.com)",
+  "version": "1.0.2",
+  "author": "Victor Duarte <victor.duarte@quadric.net> (https://feats.co)",
   "private": false,
   "license": "Apache-2.0",
   "preferGlobal": true,
