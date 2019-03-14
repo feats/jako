@@ -44,6 +44,8 @@ const types = {
   app: 'applications',
   pkg: 'packages',
   svc: 'services',
+  cloud: 'cloud',
+  k8s: 'k8s',
 }
 const typesInverted = Object.keys(types).reduce((obj, key) => ((obj[types[key]] = key), obj), {})
 
@@ -97,11 +99,13 @@ function processScripts(paths) {
   }
 }
 
+processScripts(glob.sync(`scripts/**/*`, { cwd, nodir: true }))
+
+processScripts(glob.sync(`@(${Object.values(types).join('|')})/scripts/**/*`, { cwd, nodir: true }))
+
 processScripts(
   glob.sync(`@(${Object.values(types).join('|')})/*/scripts/**/*`, { cwd, nodir: true })
 )
-processScripts(glob.sync(`scripts/**/*`, { cwd, nodir: true }))
-processScripts(glob.sync(`k8s/**/*`, { cwd, nodir: true }))
 
 ///////////////////////////////////////////////////////////////////////////////
 // Wildcards                                                                 //
