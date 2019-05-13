@@ -46,7 +46,7 @@ const types = {
   svc: 'services',
   cloud: 'cloud',
   k8s: 'k8s',
-  integration: 'integration',
+  tests: 'tests',
 }
 const typesInverted = Object.keys(types).reduce((obj, key) => ((obj[types[key]] = key), obj), {})
 
