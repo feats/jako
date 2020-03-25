@@ -11,13 +11,13 @@
 </p>
 <br />
 
-* **Zero setup:** There is no need to configure _jako_, and setting it up is as easy as moving your current scripts to a folder.
+- **Zero setup:** There is no need to configure _jako_, and setting it up is as easy as moving your current scripts to a folder.
 
-* **Polyglot:** You are free to write your scripts using any language you want.
+- **Polyglot:** You are free to write your scripts using any language you want.
 
-* **Translucent:** Forget about build tools that force you to write code that only work for that specific runner. As a principle, all the scripts run by _jako_ need to be executable also without _jako_. No vendor lock, less API to keep track of.
+- **Translucent:** Forget about build tools that force you to write code that only work for that specific runner. As a principle, all the scripts run by _jako_ need to be executable also without _jako_. No vendor lock, less API to keep track of.
 
-* **Extensible and modular:** _jako_ doesn't hold you back while your project is growing. Encapsulate as many independent projects as you want in a single repo and _jako_ will let you run all your scripts from a centralized place.
+- **Extensible and modular:** _jako_ doesn't hold you back while your project is growing. Encapsulate as many independent projects as you want in a single repo and _jako_ will let you run all your scripts from a centralized place.
 
 <br />
 
@@ -48,6 +48,7 @@ You can install it from one of these 3 options:
 ```
 
 #### locally
+
 you may also install it as a development dependency in a package.json file:
 
 ```json
@@ -72,16 +73,20 @@ for the full list of available `options`, please check [jake's options](https://
 Let's create our first script together! To do so, let's imagine you want to have a script that clears all the `node_modules` folders in your repo.
 
 1. create a `/scripts/clean` folder and create a file named `node_modules.sh` inside it:
+
 ```bash
 $ mkdir -p scripts/clean
 $ printf "#\!/bin/bash\nfind . \( -type d -name 'node_modules' \) -exec rm -rf '{}' +" > scripts/clean/node_modules.sh
 ```
+
 2. give it permission to run:
+
 ```bash
 $ chmod +x **/*.sh
 ```
 
 3. run it!
+
 ```bash
 # both calls below should be equivalent:
 
@@ -101,12 +106,28 @@ Nesting `scripts` folders deep inside your project is not only possible but reco
 
 ## Good practices
 
-* always add [shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29) to your scripts.
-* always give your scripts permission to run: `chmod +x file-path.ext`
-* _jako_ will always call your scripts **from the directory they are placed in**, but not all runners will do that for you. If you, i.e, execute a bash script as `./scripts/clean/node_modules.sh` instead of `cd ./scripts/clean ; ./node_modules.sh`, that could remove folders in different places than the ones you expected. That's why we encourage you to enforce a standardized `cwd` for all your scripts. In bash you can do that by appending `dirname "$0"` to the top of your scripts.
+- always add [shebang](https://en.wikipedia.org/wiki/Shebang_%28Unix%29) to your scripts.
+- always give your scripts permission to run: `chmod +x file-path.ext`
+- _jako_ will always call your scripts **from the directory they are placed in**, but not all runners will do that for you. If you, i.e, execute a bash script as `./scripts/clean/node_modules.sh` instead of `cd ./scripts/clean ; ./node_modules.sh`, that could remove folders in different places than the ones you expected. That's why we encourage you to enforce a standardized `cwd` for all your scripts. In bash you can do that by appending `dirname "$0"` to the top of your scripts.
 
 ![divider](.github/divider.png)
 
-**Credits**
+<a href="https://feats.co">
+  <p align="center"><img src="./.github/feats.png" width="171" /><p>
+</a>
 
+<p align="center">
+<a href="https://feats.co">
+  <strong>This project is sponsored by feats.</strong><br />
+</a>
+<sub>Join a community of people helping each other get credit for their roles in projects.<br />From developing products and apps to architecture and campaigns.</sub>
+</p>
+
+<br />
+<br />
+<br />
+<br />
+
+<sub><i>
 Vector illustration credit: <a target="_blank" href="https://vecteezy.com">www.vecteezy.com</a>
+</i></sub>
