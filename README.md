@@ -112,6 +112,10 @@ Nesting `scripts` folders deep inside your project is not only possible but reco
 
 ![divider](.github/divider.png)
 
+<br />
+<br />
+<br />
+
 <a href="https://feats.co">
   <p align="center"><img src="./.github/feats.png" width="171" /><p>
 </a>
@@ -126,8 +130,7 @@ Nesting `scripts` folders deep inside your project is not only possible but reco
 <br />
 <br />
 <br />
-<br />
 
 <sub><i>
-Vector illustration credit: <a target="_blank" href="https://vecteezy.com">www.vecteezy.com</a>
+Jako's logo illustration credit: <a target="_blank" href="https://vecteezy.com">www.vecteezy.com</a>
 </i></sub>
