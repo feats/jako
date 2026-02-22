@@ -19,9 +19,9 @@
     "lib"
   ],
   "dependencies": {
-    "glob": "^7.1.0",
+    "glob": "^13.0.6",
     "intercept-stdout": "^0.1.2",
-    "jake": "^8.0.0"
+    "jake": "^10.9.4"
   },
   "optionalDependencies": {
     "ora": "^3.0.0"
